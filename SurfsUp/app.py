@@ -101,7 +101,32 @@ def tobs():
     session.close()
 
     temperatures = list(np.ravel(temperature_data))
-    return jsonify(temperaturesr)
+    return jsonify(temperatures)
+
+@app.route("/api/v1.0/<start>")
+def start(start):
+	session = Session(engine)
+
+	results = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)).\
+		filter(Measurement.date >= start).all()
+
+	session.close()
+
+	temperature = list(np.ravel(results))
+	return jsonify(temps)
+
+@app.route("/api/v1.0/<start>/<end>")
+def start_end(start, end):
+	session = Session(engine)
+
+	results = session.query(func.min(Measurement.tobs), func.max(Measurement.tobs), func.avg(Measurement.tobs)).\
+		filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+
+	session.close()
+
+	temps = list(np.ravel(results))
+	return jsonify(temps)
+		
 
 if __name__ == "__main__":
     app.run(debug=True)
